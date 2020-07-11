@@ -23,6 +23,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import AppContextProvider, {AppContext} from './context/AppContext';
 import AsyncStorage from '@react-native-community/async-storage';
 import {baseURL} from './baseURL';
+import Historique from './components/Historique';
 
 Axios.defaults.baseURL = baseURL;
 
@@ -38,6 +39,15 @@ const App = () => {
           header: () => null,
         }}
       />
+
+      <Stack.Screen
+        name="Historique"
+        component={Historique}
+        options={{
+          header: () => null,
+        }}
+      />
+
       <Stack.Screen
         name="Camera"
         component={CameraModule}
@@ -70,14 +80,32 @@ export default App;
 
 const Home = ({navigation}) => {
   const {user, logout} = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+  if (loading) {
+    return (
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <Text>déconnexion en cours</Text>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   return (
-    <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-      <Text>logged in as {user.name} </Text>
+    <View
+      style={{justifyContent: 'space-around', alignItems: 'center', flex: 1}}>
+      <Text>coucou {user.name} </Text>
       <Button onPress={() => navigation.navigate('Camera')}>
         <Text>Commancer</Text>
       </Button>
 
-      <Button onPress={() => logout()}>
+      <Button onPress={() => navigation.navigate('Historique')}>
+        <Text>historique</Text>
+      </Button>
+
+      <Button
+        onPress={() => {
+          setLoading(true);
+          logout(loading, setLoading);
+        }}>
         <Text>Log Out</Text>
       </Button>
     </View>
