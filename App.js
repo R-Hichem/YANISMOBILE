@@ -71,6 +71,13 @@ const App = () => {
           header: () => null,
         }}
       />
+      <Stack.Screen
+        name="RealStats"
+        component={RealStats}
+        options={{
+          header: () => null,
+        }}
+      />
     </Stack.Navigator>
   );
   // return <CameraModule />;
@@ -163,25 +170,30 @@ const Reciep = ({navigation}) => {
 
 const Stats = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
+  const [fail, setFail] = useState(false);
   const [responseData, setResponseData] = useState(null);
+  const {user} = useContext(AppContext);
   const changePAS = true;
+  Axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
   useEffect(() => {
     console.log('axios post');
-
     Axios.post('/api/getResults', {
       image: route.params.imageb64,
     })
       .then(response => {
-        console.log(response.data);
-        setResponseData(response.data);
+        console.log(response.data.data);
+        setResponseData(response.data.data);
         setLoading(false);
       })
       .catch(error => {
         console.log('error', error);
+        setFail(true);
         setLoading(false);
       });
   }, [changePAS]);
+
   const {imageb64} = route.params;
+
   if (loading) {
     return (
       <View
@@ -191,10 +203,61 @@ const Stats = ({navigation, route}) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
+        <Text>Traitement de l'image en cours</Text>
         <ActivityIndicator size="large" />
       </View>
     );
   }
+
+  if (fail) {
+    return (
+      <Container>
+        <Content>
+          <Text>Sad Reacts only xd</Text>
+          <Button
+            block
+            style={{alignContent: 'flex-end'}}
+            onPress={() => navigation.goBack()}>
+            <Text>Prendre un autre repas</Text>
+          </Button>
+        </Content>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <Content>
+        <Header style={styles.customheader}>
+          <Text style={{color: 'white', fontSize: 22}}>Choose something</Text>
+        </Header>
+        {responseData.map(repas => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('RealStats', {
+                  repas,
+                });
+              }}>
+              <View>
+                <Text> {repas.name} </Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+        <Button
+          block
+          style={{alignContent: 'flex-end'}}
+          onPress={() => navigation.goBack()}>
+          <Text>Prendre un autre repas</Text>
+        </Button>
+      </Content>
+    </Container>
+  );
+};
+
+const RealStats = ({navigation, route}) => {
+  const {repas} = route.params;
   return (
     <Container>
       <Content>
@@ -203,13 +266,13 @@ const Stats = ({navigation, route}) => {
             Valeur Nutritionelle par 100gr
           </Text>
         </Header>
-        <Text style={{color: 'black', fontSize: 22}}>{responseData.label}</Text>
+        <Text style={{color: 'black', fontSize: 22}}>{repas.name}</Text>
         <ListItem>
           <Left>
             <Text>Protéines</Text>
           </Left>
           <Right>
-            <Text>{responseData.details.proteine} g</Text>
+            <Text>{repas.prots} g</Text>
           </Right>
         </ListItem>
         <ListItem>
@@ -217,7 +280,7 @@ const Stats = ({navigation, route}) => {
             <Text>Lipides</Text>
           </Left>
           <Right>
-            <Text>{responseData.details.lipide} g</Text>
+            <Text>{repas.lipides} g</Text>
           </Right>
         </ListItem>
 
@@ -226,16 +289,16 @@ const Stats = ({navigation, route}) => {
             <Text>Glucies</Text>
           </Left>
           <Right>
-            <Text>{responseData.details.lipide} g</Text>
+            <Text>{repas.glucides} g</Text>
           </Right>
         </ListItem>
 
         <ListItem>
           <Left>
-            <Text>Fibres</Text>
+            <Text>Total Calories</Text>
           </Left>
           <Right>
-            <Text>2 g</Text>
+            <Text>{repas.calories} cal</Text>
           </Right>
         </ListItem>
 

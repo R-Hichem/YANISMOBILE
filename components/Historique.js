@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,26 @@ import {
   Body,
 } from 'native-base';
 import {StyleSheet, ActivityIndicator} from 'react-native';
+import {AppContext} from '../context/AppContext';
+import Axios from 'axios';
 
 const Historique = ({navigation, route}) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [logs, setLogs] = useState([]);
+  const {user} = useContext(AppContext);
+  useEffect(() => {
+    Axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
+    Axios.post('/api/getHistorique')
+      .then(response => {
+        console.log(response.data.data);
+        setLogs(response.data.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        alert('Unexpected Error !');
+        console.log('error from somewhere');
+      });
+  }, []);
   if (loading) {
     return (
       <View
@@ -35,7 +52,13 @@ const Historique = ({navigation, route}) => {
           <Text style={{color: 'white', fontSize: 22}}>Historique</Text>
         </Header>
         <Text style={{color: 'black', fontSize: 22}} />
-        <HistoriqueItem repas="Pomme" date="22/07/2020 20h16" />
+        {logs.length === 0 ? (
+          <Text>Vous n'avez pas encors pris un repas !</Text>
+        ) : (
+          logs.map(log => {
+            return <HistoriqueItem repas={log.name} date={log.date} />;
+          })
+        )}
       </Content>
     </Container>
   );
