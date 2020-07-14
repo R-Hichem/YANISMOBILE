@@ -14,6 +14,7 @@ import {
 import {StyleSheet, ActivityIndicator} from 'react-native';
 import {AppContext} from '../context/AppContext';
 import Axios from 'axios';
+import colors from '../colors';
 
 const Historique = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ const Historique = ({navigation, route}) => {
     Axios.post('/api/getHistorique')
       .then(response => {
         console.log(response.data.data);
-        setLogs(response.data.data);
+        setLogs(response.data.data.reverse());
         setLoading(false);
       })
       .catch(error => {
@@ -46,10 +47,12 @@ const Historique = ({navigation, route}) => {
     );
   }
   return (
-    <Container>
+    <Container style={{backgroundColor: colors.primaryColor}}>
       <Content>
         <Header style={styles.customheader}>
-          <Text style={{color: 'white', fontSize: 22}}>Historique</Text>
+          <Text style={{color: 'white', fontSize: 22, fontWeight: 'bold'}}>
+            Historique
+          </Text>
         </Header>
         <Text style={{color: 'black', fontSize: 22}} />
         {logs.length === 0 ? (
@@ -68,10 +71,10 @@ const HistoriqueItem = ({repas, date}) => {
   return (
     <ListItem>
       <Left>
-        <Text> {repas} </Text>
+        <Text style={styles.repas}> {repas} </Text>
       </Left>
       <Body>
-        <Text>{date}</Text>
+        <Text style={styles.date}>{date}</Text>
       </Body>
     </ListItem>
   );
@@ -81,7 +84,13 @@ const styles = StyleSheet.create({
   customheader: {
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.secondaryColor,
   },
+  repas: {
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+  },
+  date: {},
 });
 
 export default Historique;

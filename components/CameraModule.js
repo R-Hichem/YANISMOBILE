@@ -3,6 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {Icon} from 'native-base';
 import Axios from 'axios';
+import colors from '../colors';
 
 class CameraModule extends PureComponent {
   takePicture = async () => {
@@ -59,6 +60,7 @@ class CameraModule extends PureComponent {
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'center',
+            backgroundColor: colors.primaryColor,
           }}>
           {/* <TouchableOpacity
           onPress={() =>navigation.navigate('Reciep')}
@@ -80,7 +82,7 @@ class CameraModule extends PureComponent {
             style={styles.capture}>
             <Text
               style={{
-                fontSize: 14,
+                fontSize: 22,
                 color: 'white',
                 alignContent: 'center',
                 justifyContent: 'center',
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
   },
   capture: {
     flex: 0,
-    backgroundColor: 'black',
+    backgroundColor: colors.secondaryColor,
     borderRadius: 5,
     padding: 15,
     paddingHorizontal: 20,

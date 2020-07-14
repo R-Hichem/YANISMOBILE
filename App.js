@@ -1,5 +1,10 @@
 import React, {PureComponent, useContext, useState, useEffect} from 'react';
-import {StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import Axios from 'axios';
 import CameraModule from './components/CameraModule';
@@ -16,7 +21,6 @@ import {
   Right,
   Radio,
   List,
-  Image,
 } from 'native-base';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -24,6 +28,7 @@ import AppContextProvider, {AppContext} from './context/AppContext';
 import AsyncStorage from '@react-native-community/async-storage';
 import {baseURL} from './baseURL';
 import Historique from './components/Historique';
+import colors from './colors';
 
 Axios.defaults.baseURL = baseURL;
 
@@ -98,22 +103,41 @@ const Home = ({navigation}) => {
   }
   return (
     <View
-      style={{justifyContent: 'space-around', alignItems: 'center', flex: 1}}>
-      <Text>coucou {user.name} </Text>
-      <Button onPress={() => navigation.navigate('Camera')}>
-        <Text>Commancer</Text>
-      </Button>
-
-      <Button onPress={() => navigation.navigate('Historique')}>
-        <Text>historique</Text>
+      style={{
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flex: 1,
+        backgroundColor: colors.primaryColor,
+      }}>
+      <Image
+        source={require('./logo.png')}
+        style={{
+          width: 350,
+          height: '50%',
+        }}
+      />
+      <Button
+        block
+        onPress={() => navigation.navigate('Camera')}
+        style={{backgroundColor: colors.secondaryColor}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Commancer</Text>
       </Button>
 
       <Button
+        block
+        onPress={() => navigation.navigate('Historique')}
+        style={{backgroundColor: colors.secondaryColor}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold'}}>historique</Text>
+      </Button>
+
+      <Button
+        block
         onPress={() => {
           setLoading(true);
           logout(loading, setLoading);
-        }}>
-        <Text>Log Out</Text>
+        }}
+        style={{backgroundColor: colors.secondaryColor}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Déconnexion</Text>
       </Button>
     </View>
   );
@@ -211,45 +235,112 @@ const Stats = ({navigation, route}) => {
 
   if (fail) {
     return (
-      <Container>
-        <Content>
-          <Text>Sad Reacts only xd</Text>
-          <Button
-            block
-            style={{alignContent: 'flex-end'}}
-            onPress={() => navigation.goBack()}>
-            <Text>Prendre un autre repas</Text>
-          </Button>
-        </Content>
+      <Container
+        style={{
+          backgroundColor: colors.primaryColor,
+        }}>
+        <Image
+          source={require('./logo.png')}
+          style={{
+            width: 350,
+            height: '50%',
+          }}
+        />
+        <Text
+          style={{
+            textAlign: 'center',
+            margin: 20,
+            fontSize: 22,
+            color: 'red',
+            fontWeight: 'bold',
+          }}>
+          Aucun résultat n'a été trouvé !
+        </Text>
+        <Button
+          block
+          style={{
+            alignContent: 'flex-end',
+            backgroundColor: colors.secondaryColor,
+          }}
+          onPress={() => navigation.navigate('Home')}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+            }}>
+            Retourner A l'acceuil
+          </Text>
+        </Button>
       </Container>
     );
   }
 
   return (
-    <Container>
+    <Container
+      style={{
+        backgroundColor: colors.primaryColor,
+      }}>
       <Content>
-        <Header style={styles.customheader}>
-          <Text style={{color: 'white', fontSize: 22}}>Choose something</Text>
+        <Header
+          style={{
+            ...styles.customheader,
+            backgroundColor: colors.secondaryColor,
+          }}>
+          <Text style={{color: 'white', fontSize: 22, fontWeight: 'bold'}}>
+            Résultats
+          </Text>
         </Header>
-        {responseData.map(repas => {
+        {responseData.map((repas, index) => {
           return (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('RealStats', {
                   repas,
                 });
+              }}
+              key={index}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignContent: 'center',
+                padding: 30,
+                backgroundColor: colors.secondaryColor,
+                marginVertical: 15,
               }}>
               <View>
-                <Text> {repas.name} </Text>
+                <Text
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    color: 'white',
+                    textTransform: 'capitalize',
+                  }}>
+                  {' '}
+                  {repas.name}{' '}
+                </Text>
               </View>
             </TouchableOpacity>
           );
         })}
-        <Button
+        {/* <Button
           block
           style={{alignContent: 'flex-end'}}
           onPress={() => navigation.goBack()}>
           <Text>Prendre un autre repas</Text>
+        </Button> */}
+        <Button
+          block
+          style={{
+            alignContent: 'flex-end',
+            backgroundColor: colors.secondaryColor,
+          }}
+          onPress={() => navigation.navigate('Home')}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+            }}>
+            Retourner A l'acceuil
+          </Text>
         </Button>
       </Content>
     </Container>
@@ -259,14 +350,31 @@ const Stats = ({navigation, route}) => {
 const RealStats = ({navigation, route}) => {
   const {repas} = route.params;
   return (
-    <Container>
+    <Container
+      style={{
+        backgroundColor: colors.primaryColor,
+      }}>
       <Content>
-        <Header style={styles.customheader}>
-          <Text style={{color: 'white', fontSize: 22}}>
+        <Header
+          style={{
+            ...styles.customheader,
+            backgroundColor: colors.secondaryColor,
+          }}>
+          <Text style={{color: 'white', fontSize: 22, fontWeight: 'bold'}}>
             Valeur Nutritionelle par 100gr
           </Text>
         </Header>
-        <Text style={{color: 'black', fontSize: 22}}>{repas.name}</Text>
+        <Text
+          style={{
+            color: 'black',
+            fontSize: 22,
+            textAlign: 'center',
+            textTransform: 'capitalize',
+            padding: 15,
+            fontWeight: 'bold',
+          }}>
+          {repas.name}
+        </Text>
         <ListItem>
           <Left>
             <Text>Protéines</Text>
@@ -295,7 +403,7 @@ const RealStats = ({navigation, route}) => {
 
         <ListItem>
           <Left>
-            <Text>Total Calories</Text>
+            <Text style={{fontWeight: 'bold'}}>Total Calories</Text>
           </Left>
           <Right>
             <Text>{repas.calories} cal</Text>
@@ -304,9 +412,17 @@ const RealStats = ({navigation, route}) => {
 
         <Button
           block
-          style={{alignContent: 'flex-end'}}
-          onPress={() => navigation.goBack()}>
-          <Text>Prendre un autre repas</Text>
+          style={{
+            alignContent: 'flex-end',
+            backgroundColor: colors.secondaryColor,
+          }}
+          onPress={() => navigation.navigate('Home')}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+            }}>
+            Retourner A l'acceuil
+          </Text>
         </Button>
       </Content>
     </Container>
